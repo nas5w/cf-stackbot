@@ -1,7 +1,7 @@
 import fxparser from "fast-xml-parser";
 
 const QUESTIONS_KEY = "questions";
-const FEED_URL = `https://stackoverflow.com/feeds/tag/${process.env.TAG}`;
+const FEED_URL = `https://stackoverflow.com/feeds/tag/${TAG}`;
 const parser = new fxparser.XMLParser();
 
 addEventListener("fetch", event => {
@@ -24,14 +24,27 @@ async function handleRequest(request) {
   const seen = new Set(questions ? JSON.parse(questions) : []);
   const newQuestions = entries.filter(entry => !seen.has(entry));
 
+  // Post to discord
+  const baseURL = `https://discordapp.com/api/channels/${CHANNEL}/messages`;
+  const headers = {
+    Authorization: `Bot ${TOKEN}`,
+    "User-Agent": "SolidStack",
+    "Content-Type": "application/json"
+  };
+  const res = await (
+    await fetch(baseURL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ content: entries[0] })
+    })
+  ).json();
+
   // Save last questions to KV store
   await STACKOVERFLOW.put(QUESTIONS_KEY, JSON.stringify(entries));
 
   return new Response(
     JSON.stringify({
-      entries,
-      questions,
-      newQuestions
+      res
     }),
     {
       headers: { "content-type": "text/plain" }

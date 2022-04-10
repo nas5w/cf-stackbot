@@ -9,3 +9,10 @@ workers_dev = true
 kv_namespaces = [ 
   { binding = "STACKOVERFLOW", id = "d363121830f5471da711c68cead892a4" }
 ]
+
+[vars]
+CHANNEL = "962325427819524118"
+TAG = "solid-js"
+
+# [secrets]
+# TOKEN
