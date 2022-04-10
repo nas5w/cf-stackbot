@@ -18,36 +18,33 @@ async function handleRequest(request) {
   const entries = parser
     .parse(feed)
     .feed.entry.map(({ id }) => id)
-    .slice(0, 20);
+    .slice(0, 5);
   const questions = await STACKOVERFLOW.get(QUESTIONS_KEY);
   // But only questions we haven't seen yet
   const seen = new Set(questions ? JSON.parse(questions) : []);
   const newQuestions = entries.filter(entry => !seen.has(entry));
 
   // Post to discord
+  await Promise.all(newQuestions.map(q => postToDiscord(q)));
+
+  // Save last questions to KV store
+  await STACKOVERFLOW.put(QUESTIONS_KEY, JSON.stringify(entries));
+
+  return new Response(JSON.stringify({ newQuestions }), {
+    headers: { "content-type": "text/plain" }
+  });
+}
+
+function postToDiscord(content) {
   const baseURL = `https://discordapp.com/api/channels/${CHANNEL}/messages`;
   const headers = {
     Authorization: `Bot ${TOKEN}`,
     "User-Agent": "SolidStack",
     "Content-Type": "application/json"
   };
-  const res = await (
-    await fetch(baseURL, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ content: entries[0] })
-    })
-  ).json();
-
-  // Save last questions to KV store
-  await STACKOVERFLOW.put(QUESTIONS_KEY, JSON.stringify(entries));
-
-  return new Response(
-    JSON.stringify({
-      res
-    }),
-    {
-      headers: { "content-type": "text/plain" }
-    }
-  );
+  return fetch(baseURL, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ content })
+  });
 }

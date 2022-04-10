@@ -12,7 +12,7 @@ kv_namespaces = [
 
 [vars]
 CHANNEL = "962325427819524118"
-TAG = "solid-js"
+TAG = "javascript"
 
 # [secrets]
 # TOKEN
