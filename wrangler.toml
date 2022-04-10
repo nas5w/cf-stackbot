@@ -1,0 +1,11 @@
+name = "cf-stackbot"
+type = "webpack"
+
+compatibility_date = "2022-04-10"
+
+account_id = "2e19fcc47baab50b231aa82c741da60a"
+workers_dev = true
+
+kv_namespaces = [ 
+  { binding = "STACKOVERFLOW", id = "d363121830f5471da711c68cead892a4" }
+]
