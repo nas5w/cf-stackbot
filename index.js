@@ -4,14 +4,11 @@ const QUESTIONS_KEY = "questions";
 const FEED_URL = `https://stackoverflow.com/feeds/tag/${TAG}`;
 const parser = new fxparser.XMLParser();
 
-addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event.request));
+addEventListener("scheduled", event => {
+  event.waitUntil(handleScheduled());
 });
-/**
- * Respond with hello worker text
- * @param {Request} request
- */
-async function handleRequest(request) {
+
+async function handleScheduled() {
   // Fetch StackOverflow feed
   const feed = await (await fetch(FEED_URL)).text();
   // Parse feed and keep most recent questions
